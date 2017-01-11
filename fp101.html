@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Functional Programming 101</title>
+<meta name="author" content="(Nathan Dotz)"/>
+<style type="text/css">
+.underline { text-decoration: underline; }
+</style>
+<link rel="stylesheet" href="file:///Users/sleepynate/Dropbox%20(Personal)/org-mode/reveal.js-3.3.0/css/reveal.css"/>
+
+<link rel="stylesheet" href="file:///Users/sleepynate/Dropbox%20(Personal)/org-mode/reveal.js-3.3.0/css/theme/moon.css" id="theme"/>
+
+<link rel="stylesheet" href="file:///Users/sleepynate/Dropbox%20(Personal)/org-mode/reveal.js-3.3.0/lib/css/zenburn.css"/>
+<!-- If the query includes 'print-pdf', include the PDF print sheet -->
+<script>
+    if( window.location.search.match( /print-pdf/gi ) ) {
+        var link = document.createElement( 'link' );
+        link.rel = 'stylesheet';
+        link.type = 'text/css';
+        link.href = 'file:///Users/sleepynate/Dropbox%20(Personal)/org-mode/reveal.js-3.3.0/css/print/pdf.css';
+        document.getElementsByTagName( 'head' )[0].appendChild( link );
+    }
+</script>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+<section id="sec-title-slide"><h1 class="title">Functional Programming 101</h1><h2 class="author">Nathan Dotz</h2><h2 class="date">Codemash 2017</h2>
+</section>
+
+<section>
+<section id="slide-org2f9e751">
+<h2 id="org2f9e751">Overview</h2>
+<aside class="notes">
+<ul>
+<li>Our objective for this workshop is going to be to learn the
+concepts behind functional programming</li>
+<li>To do this, we're going to review 2 seminal functional programming
+languages, ML and Racket</li>
+<li>Along the way, I will guide you through several exercises that
+we'll do as a group so you don't have to worry about setting up
+archaic programming environments on your machine</li>
+<li>Once we've reviewed ML and Racket, we'll spend the remainder of
+the session presenting practice problems and giving you time to
+work on them in the language you normally work in, focusing on how
+to create functional-styled solutions.</li>
+
+</ul>
+
+</aside>
+<ul>
+<li>Learn Functional Programming from scratch</li>
+<li>Static &amp; strongly typed functional language (ML)</li>
+<li>Weak &amp; dynamically typed functional language (Racket)</li>
+<li>Work on using concepts we learned in your language</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-orgb5ef6b3">
+<h2 id="orgb5ef6b3">Do your best to</h2>
+<aside class="notes">
+<ul>
+<li>You might be asking yourself why we're using two languages that
+you're not likely to ever use again once you leave here.</li>
+<li>That's actually the whole point! Try to not think about the
+languages that you are familiar with and instead think about these
+languages on their own, which is the best way to let new ideas
+sink in</li>
+<li>We'll worry about how to apply the methodologies we have learned
+from ML and Racket when we get to the exercises section.</li>
+
+</ul>
+
+</aside>
+<ul>
+<li>Ignore the FP concepts you've tried to learn already</li>
+<li>Not compare to your normal language</li>
+<li>Treat these as completely new concepts</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-org2acdeb9">
+<h2 id="org2acdeb9">What are we learning today?</h2>
+<aside class="notes">
+<p>
+Before we get too involved, let's get to know each other a little,
+which will also help me to know what topics to concentrate on more.
+</p>
+
+<p>
+First, we'll have everyone put their hands up, and I'm going to
+recite a list of successively fancier programming terms and
+concepts, and as I list them off, if you understand that concept,
+leave your hand up in the air.
+</p>
+
+<p>
+If you don't understand a concept or term, or maybe you're familiar
+but not quite comfortable with it, take your hand down and if you're
+next to someone who has their hand up, introduce yourselves.
+</p>
+
+<p>
+You're all going to be talking to each other and me during exercises
+anyways so just get used to helping each other a little bit.
+</p>
+
+<p>
+OK, hands up.
+</p>
+
+<ul>
+<li>variable</li>
+<li>function</li>
+<li>object</li>
+<li>class</li>
+<li>constant</li>
+<li>compiler</li>
+<li>interpreter</li>
+<li>REPL</li>
+<li>recursion</li>
+<li>lambdas/anonymous functions</li>
+<li>higher-order functions</li>
+<li>tail-call recursion optimization</li>
+<li>lexical scoping</li>
+<li>referential transparency</li>
+<li>functor</li>
+<li>applicative functor</li>
+<li>monad</li>
+<li>Kleisli triple</li>
+<li>zygohistomorphic prepromorphisms</li>
+
+</ul>
+
+</aside>
+</section>
+</section>
+<section>
+<section id="slide-org90b20af">
+<h2 id="org90b20af">Standard ML</h2>
+<div class="outline-text-2" id="text-org90b20af">
+</div></section>
+<section id="slide-orgcc9337b">
+<h3 id="orgcc9337b">ML</h3>
+<aside class="notes">
+<ul>
+<li>ML was thought up by Robin Milner in 1973</li>
+<li>ML was not intended for implementation</li>
+<li>Rather, ML was supposed to be a "Meta Language" to write proofs in</li>
+<li>Showing up on the scene about 15 years after LISP, ML is often
+referred to as "LISP with types", although as we'll see, ML can
+also be quite different than LISP</li>
+
+</ul>
+
+</aside>
+<ul>
+<li>Robin Milner, 1973 University of Edinburgh</li>
+<li>Language spec, not implementation</li>
+<li>"LISP with types"</li>
+
+</ul>
+</section>
+<section id="slide-org7a88265">
+<h3 id="org7a88265">Standard ML</h3>
+<aside class="notes">
+<ul>
+<li>Of course, if you put something out into the world that's never
+supposed to be implemented, somebody is going to implement it</li>
+<li>Those somebodies were the Princeton &amp; Bell Labs</li>
+
+</ul>
+
+</aside>
+<ul>
+<li>Proposed 1983</li>
+<li>Defined 1990</li>
+<li>Revised 1997</li>
+<li>Implemented by Princeton &amp; Bell Labs as SML/NJ</li>
+<li>Grandparent of OCaml, Haskell, F#, Elm, Idris</li>
+
+</ul>
+</section>
+<section id="slide-org5ac3b61">
+<h3 id="org5ac3b61">Features of ML</h3>
+<ul>
+<li>Functional programming (but not pure)</li>
+<li>Tail-call optimization</li>
+<li>Call-by-Value</li>
+<li>Eager evaluation</li>
+<li>Pattern matching</li>
+<li>Garbage collection</li>
+<li>Static typing</li>
+<li>Type inference</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-orgde7e4e6">
+<h2 id="orgde7e4e6">Racket</h2>
+<div class="outline-text-2" id="text-orgde7e4e6">
+</div></section>
+<section id="slide-org9e9d407">
+<h3 id="org9e9d407">LISP</h3>
+<aside class="notes">
+<ul>
+<li>LISP started all the way back in 1958 with John McCarthy</li>
+<li>LISP is the second oldest programming language still in
+widespread use today. Fortran is older by one year.</li>
+<li>Perhaps unsurprisingly LISP started not as an implementation but
+was meant to be a mathematical notation for talking about
+computer programs. It subsequently implemented by a fellow named
+Steve Russel sometime between '60 and '62</li>
+
+</ul>
+
+</aside>
+<ul>
+<li>John McCarthy, 1958 MIT</li>
+<li>2nd oldest programming language</li>
+<li>Started as a mathematical notation</li>
+<li>LISt Processing</li>
+<li>All program code comprised of lists (s-expressions)</li>
+
+</ul>
+</section>
+<section id="slide-orgcbc5e28">
+<h3 id="orgcbc5e28">Scheme</h3>
+<aside class="notes">
+<ul>
+<li>Around the time Milner was coming up with with ML, Guy Steele &amp;
+Gerald Sussman were over at MIT's AI Lab getting frustrated with
+understanding concurrency, and wrote a "tiny LISP interpreter"</li>
+<li>What they ended up creating was one of the two main branches of
+LISP ­ Scheme.</li>
+<li>Of its 23 reserved words, 11 are just there for convenience and
+are really just combinations of the other 12 that are so common
+there's no reason not to put them in the language.</li>
+<li>In 1995, Netscape recruited a fellow named Brendan Eich with the
+intention of having him implement Scheme as a programming
+environment in their browser for creating dynamic web
+applications. However, they were also working with Sun
+Microsystems at the time, so it was ordained that the syntax be
+changed ever so slightly to resemble Java, and 10 days later,
+JavaScript was born.</li>
+
+</ul>
+
+</aside>
+<ul>
+<li>Guy Steele &amp; Gerald Sussman, 1975 MIT AI Lab</li>
+<li>Small language (23 symbols, 11 are "convenience")</li>
+<li>About 45 current implementations</li>
+<li>Influenced Javascript, Ruby, Clojure</li>
+
+</ul>
+</section>
+<section id="slide-orgc81a519">
+<h3 id="orgc81a519">Features of Racket</h3>
+<ul>
+<li>Functional programming (also not pure)</li>
+<li>Tail-call optimization</li>
+<li>Green and OS threads</li>
+<li>Lexical Closures</li>
+<li>Continuations</li>
+<li>Powerful macro system</li>
+<li>Pattern matching</li>
+<li>Contracts</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-org0aa361c">
+<h2 id="org0aa361c"><img src="http://i.imgur.com/mSIUhtX.jpg" alt="mSIUhtX.jpg" /></h2>
+<aside class="notes">
+<p>
+You may be feeling like this right now with all the jargon I just
+spewed at you, and that's OK.
+</p>
+
+<p>
+If all of those features that we just talked about don't make sense,
+that's fine. We'll be covering many of them, if not by name, as we
+present these languages.
+</p>
+
+</aside>
+</section>
+</section>
+<section>
+<section id="slide-org1fb56ee">
+<h2 id="org1fb56ee">What is Functional Programming?</h2>
+<aside class="notes">
+<p>
+OK, now is your first obligatory participation opportunity.
+Does anyone have a definition of functional programming?
+What concepts do you associate with functional programming?
+</p>
+
+</aside>
+</section>
+<section id="slide-org668df44">
+<h3 id="org668df44">Did you guess</h3>
+<ul>
+<li class="fragment roll-in">Lambdas λ</li>
+<li class="fragment roll-in">Higher-order functions</li>
+<li class="fragment roll-in">Functions are first-class citizens</li>
+
+</ul>
+</section>
+<section id="slide-org0b87a42">
+<h3 id="org0b87a42">Well sure, but what we're after is</h3>
+<ul>
+<li class="fragment roll-in">elimination of state</li>
+<li class="fragment roll-in">elimination of effects</li>
+
+</ul>
+
+<p>
+via
+</p>
+
+<ul class="fragment appear">
+<li>higher order functions</li>
+<li>referential transparency</li>
+
+</ul>
+</section>
+<section id="slide-orgddff3fd">
+<h3 id="orgddff3fd">In short</h3>
+<ul>
+<li>pass everything into scope</li>
+<li>every scope returns a value</li>
+<li>scope? yep, probably functions</li>
+<li>don't mutate (esp. not out of scope)</li>
+
+</ul>
+</section>
+</section>
+<section>
+<section id="slide-org60125f0">
+<h2 id="org60125f0">ML</h2>
+<aside class="notes">
+nil
+</aside>
+</section>
+<section id="slide-org9d8eb25">
+<h3 id="org9d8eb25">Values</h3>
+<aside class="notes">
+<ul>
+<li>"val" is our keyword for declaring values in ML</li>
+<li>ML has type inference, so we don't have to specify the types of
+our declarations, but if we wish to, we can append a colon and
+then the type to make sure the type infer-er behaves the way we
+would like.</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="sml" >(* exactly the same *)
+val a = 5
+val b: int = 5
+
+a = b (* returns true - comparison, not assignment *)
+
+val a = 6 (* completely redeclare a - don't do this *)
+</code></pre>
+</div>
+</section>
+<section id="slide-orge9ddab0">
+<h3 id="orge9ddab0">Pairs</h3>
+<aside class="notes">
+<ul>
+<li>Tuples are heterogeneous typed and fixed-length</li>
+<li>Tuples and they can be nested</li>
+<li>We use hash functions to access parts of tuples</li>
+<li>Accessing values with hash functions is 1-based, not 0-based</li>
+<li>This is also our first look at calling functions. As you can see
+here, to call a function, we just put a space between a function
+and its arguments, though sometimes we need parenthesis to have
+the grouping work right, as they're right-associative.</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="sml" >val a: int * int = (5, 7)
+val b: int * (bool * int) = (3, (true, 2))
+
+#1 a = 5
+#2 a = 7
+#1 (#2 b) = true
+</code></pre>
+</div>
+</section>
+<section id="slide-org40b60a7">
+<h3 id="org40b60a7">Records</h3>
+<aside class="notes">
+<ul>
+<li>Records are another heterogeneously typed structure</li>
+<li>Again, we access values through hash functions on the keys</li>
+<li>Tuples are in fact just records with numeric keys</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="sml" >val x: {a:int, b:string, c:bool} = {a=1, b="2", c=false}
+val y = {foo=5}
+
+#a x + #foo y = 6
+
+val triple: string * bool * int = {2=false, 1="a", 3=5}
+</code></pre>
+</div>
+</section>
+<section id="slide-org7402056">
+<h3 id="org7402056">Lists</h3>
+<aside class="notes">
+<ul>
+<li>Lists are homogeneously typed and variable-length</li>
+<li>The null function is our empty check for lists</li>
+<li>hd and tl return the first and remaining elements of lists</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="sml" >val a: 'a list = []
+val b: int list = [1, 2, 3]
+
+val c = 0 :: b (* cons operator *)
+c = [0, 1, 2, 3]
+
+null [] = true
+null b = false
+
+hd b = 1
+tl b = [2, 3]
+tl (tl (tl b)) = []
+</code></pre>
+</div>
+</section>
+<section id="slide-org8be9939">
+<h3 id="org8be9939">Functions</h3>
+<aside class="notes">
+<p>
+Here we see a couple functions defined.
+</p>
+<ul>
+<li>Parameter types occur after parameters, separated by colon</li>
+<li>ML is expression-based</li>
+<li>Expressions are type safe</li>
+<li>∴ every if has a then and else, both returning same type</li>
+<li>function return type follows parameters, separated by colon</li>
+<li>function parameters are tuples</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="sml" >(* int -> int *)
+fun add1 (x: int) = x + 1
+
+(* int * int -> int *)
+fun pow (x: int, y: int) =
+    if   y = 0
+    then 1
+    else x * pow(x, y - 1)
+
+fun cube (x: int): int = pow (x, 3)
+
+val b = (2, 3)
+pow b = 8
+pow b = pow(2,3)
+</code></pre>
+</div>
+</section>
+<section id="slide-org84df0f3">
+<h3 id="org84df0f3">Recursion</h3>
+<aside class="notes">
+<ul>
+<li>No "for" loops in SML</li>
+<li>Recursion is standard for iteration</li>
+<li>These functions are not tail-call recursive, meaning they could
+blow the stack, but we'll talk more about that in a moment.</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="sml" >fun sum (xs: int list) =
+    if   null xs
+    then 0
+    else hd xs + sum (tl xs)
+
+fun concat (xs: int list, ys: int list) =
+    if   null xs
+    then ys
+    else hd xs :: concat (tl xs, ys)
+</code></pre>
+</div>
+</section>
+<section id="slide-orgfbfa4cc">
+<h3 id="orgfbfa4cc">Local bindings</h3>
+<aside class="notes">
+<ul>
+<li>Lexical scoping gives us local bindings</li>
+<li>local bindings unavailable outside function</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="sml" >fun local_bindings (x: int) =
+    let val a = if x > 0 then x else ~x (* same as: abs x *)
+        val b = a + 100
+    in
+        if b > 200 then b div 2 else b * b
+    end
+
+fun range (x: int) =
+    let
+        fun range (y: int) =
+            if y = x
+            then x :: []
+            else y :: range (y + 1)
+    in
+        range 0
+    end
+</code></pre>
+</div>
+</section>
+<section id="slide-org1190219">
+<h3 id="org1190219">Options</h3>
+<aside class="notes">
+<ul>
+<li>Option is a container that holds a single value</li>
+<li>We have isSome and valOf that work on options</li>
+<li>isSome tells us if an Option is non-empty</li>
+<li>valOf extracts values, or throws on NONE</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="sml" >val a: int option = SOME 5
+val b: int option = NONE
+
+isSome b = false
+val c: int = if isSome a then valOf a else 0
+</code></pre>
+</div>
+</section>
+<section id="slide-orgb1b9ece">
+<h3 id="orgb1b9ece">Options</h3>
+<aside class="notes">
+<ul>
+<li>Options provide a safer mechanism than exception handling</li>
+<li>Functions can expect to handle failure without exceptions or null</li>
+<li>The first example here would throw an Empty exception if the
+character can't be found</li>
+<li>The second example won't throw, but uses a magic number as the
+return value in its failure condition</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="sml" >fun strchr (s: char list, c: char, acc: int) =
+    if   hd s = c
+    then acc
+    else strchr (tl s, c, acc + 1)
+
+fun strchr' (s: char list, c: char, acc: int) =
+    if   s = []
+    then ~1
+    else
+        if   hd s = c
+        then acc
+        else strchr' (tl s, c, acc + 1)
+</code></pre>
+</div>
+</section>
+<section id="slide-org5bef4f3">
+<h3 id="org5bef4f3">Options</h3>
+<aside class="notes">
+<ul>
+<li>By using local bindings to create a private function, we get a
+type-safe wrapper around an otherwise unsafe or inconsistent function</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="sml" >fun strchr (s: string, c: char) =
+let
+    fun strchr' (s: char list, acc: int) =
+        if   s = []
+        then ~1
+        else
+            if   hd s = c
+            then acc
+            else strchr' (tl s, acc + 1)
+
+    val i = strchr' (explode s, 0)
+in
+    if i = ~1 then NONE else SOME i
+end
+</code></pre>
+</div>
+</section>
+<section id="slide-org668e650">
+<h3 id="org668e650">Data Types</h3>
+<aside class="notes">
+<ul>
+<li>Not only is there the Option type, ML lets us define our own custom types</li>
+<li>The type is defined on the left</li>
+<li>Various constructors for the type go on the right</li>
+<li>Constructor can be "of" an existing type, or a singleton</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="sml" >datatype Toppings = Mustard of string
+                    | Pickles of int
+                    | PepperAndOnion of int * int
+                    | Relish
+</code></pre>
+</div>
+</section>
+<section id="slide-orgf1d0cdc">
+<h3 id="orgf1d0cdc">Data Types</h3>
+<aside class="notes">
+<ul>
+<li>These types can then be used much like any other type</li>
+<li>This includes in conjunction with container types like list and option</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="sml" >datatype HotDogStyle = ToppedWith of Toppings list
+                       | Plain
+
+datatype HotDog = Link of HotDogStyle
+                  | Brat of HotDogStyle;
+
+val myToppings:HotDogStyle = [Mustard("dijon"), Relish, Pickles(2)]
+val myDog = Brat (ToppedWith myToppings)
+val yourDog = SOME(Link Plain)
+</code></pre>
+</div>
+</section>
+<section id="slide-org11bcf96">
+<h3 id="org11bcf96">Type Bindings</h3>
+<aside class="notes">
+<ul>
+<li>In addition to data types, we have type bindings</li>
+<li>Type bindings work as synonyms for existing types</li>
+<li>Type bindings do not create new constructors</li>
+<li>This is especially useful for records: records as params are typing hell</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="sml" >type hotdogOrder = int * HotDog
+
+val myOrder = 2 * myDog
+
+type attendee = { name       : string,
+                  company    : string option,
+                  experience : int }
+
+fun attendeeName (a: attendee):string = #name a
+
+ attendeeName {name= "bob", company= NONE, experience= 2}
+</code></pre>
+</div>
+</section>
+<section id="slide-orgb102c91">
+<h3 id="orgb102c91">Pattern Matching</h3>
+<aside class="notes">
+<ul>
+<li>Case statements provide a way of "deconstructing" type constructors</li>
+<li>Matches can be made on any type of constructor</li>
+<li>this includes Option and list like we've seen already</li>
+<li>Underscore is used as a wild card</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="sml" >fun likesBrats (d: HotDog) =
+    case d of
+        Brat _ => true
+      | Link _ => false
+
+likesBrats (Brat Plain)
+</code></pre>
+</div>
+</section>
+<section id="slide-org8d6595f">
+<h3 id="org8d6595f">Pattern Matching</h3>
+<aside class="notes">
+<ul>
+<li>using local bindings can clean up nested cases</li>
+<li>here 'style' is used to "break off" the top constructor to get
+the inner values</li>
+<li>here's a sneak-peak at lambda syntax</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="sml" >fun likesRelish (d: HotDog) =
+let
+    val style = case d of
+                    Brat s => s
+                  | Link s => s
+in
+    case style of
+        Plain => false
+      | ToppedWith ts => List.exists (fn t => t = Relish) ts
+end
+
+likesRelish (Link Plain) = false
+likesRelish (Brat (ToppedWith [Relish])) = true
+</code></pre>
+</div>
+</section>
+<section id="slide-orgfdd9f46">
+<h3 id="orgfdd9f46">Pattern Matching</h3>
+<aside class="notes">
+<ul>
+<li>Again, matches can be made on any type of constructor</li>
+<li>Case statements can be used to destructure basically any type</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="sml" >fun addTuple t =
+    case t of
+        (a, b, c) => a + b + c
+
+fun sum l =
+    case l of
+        []      => 0
+      | h :: t  => h + (sum t)
+</code></pre>
+</div>
+</section>
+<section id="slide-org3d48409">
+<h3 id="org3d48409">Pattern Matching Function Signatures</h3>
+<aside class="notes">
+<ul>
+<li>Functions have a special form of case expression</li>
+<li>They can be written as multiple definitions instead</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="sml" >fun likesBrats (Brat _) = true
+  | likesBrats (Link _) = false
+
+fun sum []       = 0
+  | sum (h :: t) = h + (sum t)
+</code></pre>
+</div>
+</section>
+<section id="slide-orgb42c769">
+<h3 id="orgb42c769">Recursive &amp; Polymorphic types</h3>
+<aside class="notes">
+<ul>
+<li>Type variables are preceded with an apostrophe</li>
+<li>They come before type name in data type definitions</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="sml" >datatype 'a Thing = Thing of 'a
+
+(case Thing 1 of Thing n => n) = 1
+(case Thing "Chimichanga" of Thing s => size s) = 11
+
+datatype 'a lyzt = Emptee | Cawns of 'a * 'a lyzt
+
+datatype ('a,'b) trie = Knowd of 'a * ('a,'b) trie * ('a,'b) trie
+                      | Leef  of 'b
+</code></pre>
+</div>
+</section>
+<section id="slide-orgb13e956">
+<h3 id="orgb13e956">Tail Recursion &amp; Accumulator Pattern</h3>
+<aside class="notes">
+<ul>
+<li>Tail-call recursion optimization is of just called "tail recursion"</li>
+<li>Return value of function is call to self</li>
+<li>Can be optimized to not take up stack frames</li>
+<li>No stack overflows ­ works like a loop</li>
+<li>Accumulator pattern provides a private function which builds the result set</li>
+<li>This leaves an optimized function without sullying the API</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="sml" >fun sum l =
+    case l of
+        []      => 0
+      | h :: t  => h + (sum t)
+
+fun sum l =
+  let fun f(is, acc) =
+    case is of
+        []      => acc
+      | h :: t  => f(t, h + acc)
+    in
+      f(l, 0)
+    end
+</code></pre>
+</div>
+</section>
+<section id="slide-org366caaa">
+<h3 id="org366caaa">Higher Order &amp; First Class Functions</h3>
+<aside class="notes">
+<ul>
+<li>Higher order functions are functions that take other functions as
+arguments</li>
+<li>Functions in ML are first-class because they can be stored and
+passed to functions as values, and returned from other functions</li>
+<li>Functions can exist independently from definition as part of a
+module as lambdas with the "fn" keyword.</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="sml" >fun repeat (f, n, x) =       (* ('a -> 'a) * int * 'a -> 'a *)
+    if n = 0 then x else f (repeat(f, n - 1, x))
+
+fun double x = x * 2         (* int -> int *)
+repeat (double, 5, 2) = 64
+
+repeat (fn x => x * x, 3, 2) = 256
+
+val square = fn x => x * x   (* int -> int *)
+repeat (square, 3, 2) = 256
+
+fun add y = fn x => x + y    (* int -> int -> int *)
+repeat (add 5, 10, 0) = 50
+</code></pre>
+</div>
+</section>
+<section id="slide-org2bd8cbc">
+<h3 id="org2bd8cbc">Exercise time!</h3>
+<aside class="notes">
+<p>
+fun map (f, xs) =
+  case xs of
+    [] =&gt; []
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">x :: xs' =&gt; (f x) :: map(f, xs'))</td>
+</tr>
+</tbody>
+</table>
+
+<p>
+fun filter (f, xs) =
+  case xs of
+    [] =&gt; []
+</p>
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="org-left" />
+</colgroup>
+<tbody>
+<tr>
+<td class="org-left">x :: xs =&gt; if f x then x :: filter(f, xs) else filter (f, xs)</td>
+</tr>
+</tbody>
+</table>
+
+</aside>
+<ul>
+<li>Define the function `map` to operate on list such that:</li>
+
+</ul>
+<div class="org-src-container">
+
+<pre><code class="sml" >map (fn x => x + 1, [1,2,3,4,5]) = [2,3,4,5,6]
+</code></pre>
+</div>
+<ul>
+<li>Define the function `filter` to operate on lists such that:</li>
+
+</ul>
+<div class="org-src-container">
+
+<pre><code class="sml" >filter (fn x => x mod 2 = 0, [1,2,3,4,5,6]) = [2,4,6]
+</code></pre>
+</div>
+</section>
+<section id="slide-org5050b2d">
+<h3 id="org5050b2d">Folds</h3>
+<aside class="notes">
+<ul>
+<li>Fold is a function that repeatedly applies a function to a
+collection to accumulate a single result</li>
+<li>folds are a common abstraction around the accumulator pattern we
+just discussed</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="sml" >fun fold (f, acc, xs) =
+  case xs of
+    []      => acc
+  | x :: xs => fold (f, f(acc, x), xs)
+
+  fold(fn (x, y) => x + y, 0, [1,2,3,4,5]) = 15
+  fold(fn (x, y) => x * y, 1, [1,2,3,4,5]) = 120
+</code></pre>
+</div>
+</section>
+<section id="slide-orgf1efe00">
+<h3 id="orgf1efe00">Function composition</h3>
+<aside class="notes">
+<ul>
+<li>Function composition is creating a new function which executes
+two functions serially</li>
+<li>The compose function is in the standard library as the function
+lowercase "o"</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="sml" >fun compose (f, g) = fn x => f(g x)
+
+fun add1 x = x + 1
+fun times2 x = x * 2
+
+(compose (times2, add1)) 2 = 6
+
+(times2 o add1) 2 = 6
+</code></pre>
+</div>
+</section>
+<section id="slide-orgf0064cc">
+<h3 id="orgf0064cc">The Pizza Operator</h3>
+<aside class="notes">
+<ul>
+<li>Also known as the forward pipe</li>
+<li>Is an easier way to think about composition</li>
+<li>Is an idiom in other, newer languages like F#</li>
+<li>Often an easier way to think about composition because of the
+order of arguments</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="sml" >infix |>
+fun x |> f = f x
+
+2 |> add1 |> times2 = 6
+
+fun add1ThenTimes2 x = x |> add1 |> times2
+
+add1ThenTimes2 2 = 6
+</code></pre>
+</div>
+</section>
+<section id="slide-org672b404">
+<h3 id="org672b404">Currying &amp; Partial Application</h3>
+<aside class="notes">
+<ul>
+<li>Currying abstracts the idea of functions that take multiple arguments</li>
+<li>Currying changes functions that take multiple arguments and
+return a value into function that take 1 argument and return a
+function which expects the next argument</li>
+<li>Partial application applies a single argument to a curried
+function and returns the next function</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="sml" >val add = fn x => fn y => x + y (* int -> int -> int *)
+add (1)(2) = 3
+add  1  2  = 3
+
+val add1 = add 1                (* int -> int *)
+add1 2 = 3
+</code></pre>
+</div>
+</section>
+</section>
+<section>
+<section id="slide-org1ccae6e">
+<h2 id="org1ccae6e">BREAK</h2>
+<aside class="notes">
+nil
+</aside>
+<div class="org-src-container">
+
+<pre><code class="sml" ></code></pre>
+</div>
+</section>
+</section>
+<section>
+<section id="slide-org418950e">
+<h2 id="org418950e">Racket</h2>
+<aside class="notes">
+<ul>
+<li>Racket is a functional-focused language that has some additional
+features allowing imperative operations</li>
+<li>So racket supports many things we've already seen: lambdas,
+closures, expression-based syntax and recursion instead of loops</li>
+<li>Rather than a static type system, Racket is a dynamic language
+where data can be treated as many different types, and everything
+is data, even the code itself</li>
+<li>As is famous of many LISPs, the syntax is very minimal, making use
+of mostly parenthesis with the occasional square bracket thrown in
+for good measure.</li>
+<li>Because of its dynamic nature, Racket allows and additional family
+of features we couldn't have in a statically typed language like
+ML, such as macros, data-quoting and evaluation, and continuations</li>
+
+</ul>
+
+</aside>
+<ul>
+<li>Functional w/ imperative features</li>
+<li>Dynamically typed</li>
+<li>Minimalist syntax</li>
+<li>Macros &amp; metaprogramming</li>
+
+</ul>
+</section>
+<section id="slide-orgcdd7b22">
+<h3 id="orgcdd7b22">Defining things</h3>
+<aside class="notes">
+<ul>
+<li>In Racket, we use the define keyword similarly to how we would
+use the `val` expression in ML</li>
+<li>Notice that pairs of parenthesis (known as "forms" in LISP) are
+evaluated with the first symbol for the operator or reference
+name, followed by any arguments (such as with + or = below)</li>
+<li>Speaking of + and =, these are not special syntax, they are
+simply functions and can be treated exactly the same as any
+function we write ourselves</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="racket" >#lang racket
+(provide (all-defined-out))
+
+(define hello "Hello, world!")
+
+(define a 5)
+
+(define b (+ a 7))
+
+(= b 12) ; returns #t
+</code></pre>
+</div>
+</section>
+<section id="slide-orgb81655a">
+<h3 id="orgb81655a">Pairs</h3>
+<aside class="notes">
+<ul>
+<li>In Racket, "car" will give you the first element of a pair</li>
+<li>In Racket, "cdr" will give you the second element of a pair</li>
+<li>"car" and "cdr", which while terrible, are historic names based
+on the memory locations used in now-ancient IBM 704 machines,
+that LISP was originally implemented on so we're stuck with them.</li>
+<li>Because deconstructing these memory locations was so important,
+there are a whole host of functions based on them for
+deconstructing nested sets of pairs, but you probably won't use
+them much, as making complex, nested data structures of pairs is
+rarely the best way to solve problems in Racket.</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="racket" >   #lang racket
+   (define p (cons 1 'a))
+
+   p ; '(1 . a)
+
+   (car p) ; 1
+   ﻿(cdr p) ; 'a
+
+ ﻿  (car (cdr (cons (cons 'a 'b) (cons 1 2)))) ; 1
+   ﻿(cdr (car (cons (cons 'a 'b) (cons 1 2)))) ; 'b
+
+   ﻿(caar (cons (cons 'a 'b) (cons 1 2))) ; 'a
+   ﻿(cdar (cons (cons 'a 'b) (cons 1 2))) ; 'b
+ ﻿  (cadr (cons (cons 'a 'b) (cons 1 2))) ; 1
+   (cddr (cons (cons 'a 'b) (cons 1 2))) ; 2
+</code></pre>
+</div>
+</section>
+<section id="slide-org5fa543f">
+<h3 id="org5fa543f">Functions</h3>
+<aside class="notes">
+<ul>
+<li>Functions are defined using the same `define` keyword we use for
+defining symbols, but functions are defined as forms</li>
+<li>Racket's `lambda` keyword is used similarly to ML's `fn` keyworkd</li>
+<li>Racket's conditionals are a little different, as there are no
+`then` or `else` keywords. Rather, the `if` form simply takes
+either 2 or 3 arguments</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="racket" >(define (add1 x) (+ x 1))
+; is syntactic sugar for
+(define add1 (lambda (x) (+ x 1)))
+
+(define (pow x y)
+  (if (= y 0)
+      1
+      (* x (pow x (- y 1)))))
+</code></pre>
+</div>
+</section>
+<section id="slide-org1fe7da7">
+<h3 id="org1fe7da7">Lists</h3>
+<aside class="notes">
+<ul>
+<li>Lists in Racket are at the same time both similar to and different
+from ML's lists</li>
+<li>Like ML, they are formed by "cons"ing values onto the front of
+existing lists</li>
+<li>A list is composed of one element cons'd onto another list</li>
+<li>In Racket, the empty list is represented by the `null` symbol, as
+opposed to ML's empty list brackets</li>
+<li>For convenience, there is a `list` form which accepts an variable
+number of arguments to perform this successive "cons"ing for you</li>
+<li>`null?` is the function which checks to see if a list is empty</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="racket" >(cons 1 (cons 2 (cons 3 (cons 4 null))))
+
+(define first-four (list 1 2 3 4))
+
+(= (car first-four) 1)          ; #t
+(= 3 (length (cdr first-four))) ; #t
+
+(define (sum xs)
+  (if (null? xs)
+      0
+      (+ (car xs) (sum (cdr xs)))))
+
+(define (concat xs ys)
+  (if (null? xs)
+      ys
+      (cons (car xs) (concat (cdr xs) ys))))
+</code></pre>
+</div>
+</section>
+<section id="slide-org3ee9c35">
+<h3 id="org3ee9c35">Dynamic typing</h3>
+<aside class="notes">
+<p>
+With ML, after talking about Lists, we jumped into talking about
+defining our own special types. However in Racket, we're dealing
+with dynamic typing, so we can create our own very flexible data
+structures without the type checker getting in our way.
+</p>
+<ul>
+<li>No compiler means we don't catch some small errors</li>
+<li>Dynamic typing also means we can consume complex data structures
+without trying to appease the type system.</li>
+<li>We can define a function which recursively sums a list of numbers
+or other lists without introducing any new concepts</li>
+<li>Meanwhile the ML implementation requires defining a new datatype
+to wrap the int and int list datatypes and subsequently
+unwrapping those types with pattern matching to get at the
+results we're interested in.</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="racket" >(a + b)            ; you probably meant (+ a b)
+</code></pre>
+</div>
+<div class="org-src-container">
+
+<pre><code class="racket" >(define (flat-sum xs)
+  (if (null? xs)
+      0
+      (if (number? (car xs))
+          (+ (car xs) (flat-sum (cdr xs)))
+          (+ (flat-sum (car xs)) (flat-sum (cdr xs))))))
+</code></pre>
+</div>
+<div class="org-src-container">
+
+<pre><code class="sml" >datatype IntOrList = Intlist of IntOrList list | Num of int
+
+fun flatSum []      = 0
+  | flatSum (x::xs) =
+      case x of
+          Num n     => n + flatSum(xs)
+        | Intlist n => flatSum(x) + flatSum(xs)
+
+flatSum [Num 1, Num 2, Num 3, Intlist [Num 4, Num 5, Num 6]];
+</code></pre>
+</div>
+</section>
+<section id="slide-org51e2547">
+<h3 id="org51e2547">Structs</h3>
+<aside class="notes">
+<p>
+Now, even though we can't define our own types in Racket like we
+can in ML, we can at least take a look at the way we define our own
+data structures
+</p>
+<ul>
+<li>In Racket, the way we define our own structures of data are with
+structs</li>
+<li>While they serve the same purpose as ML's records, just like
+everything in Racket, there's no type specificity</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="racket" >(struct triple (x y z) #:transparent)
+
+(define t (triple 1 2 3))
+
+(triple? t) ; #t
+(triple-x t) ; 1
+(triple-y t) ; 2
+(triple-z t) ; 3
+
+(triple 'a "b" (list "c" ''d 5))
+</code></pre>
+</div>
+</section>
+<section id="slide-org53ac513">
+<h3 id="org53ac513">Cond</h3>
+<aside class="notes">
+<ul>
+<li>In ML, pattern matching was our Swiss army knife of conditional
+branching and destructuring values based on their types</li>
+<li>In Racket, the powerhouse for making these kinds of decisions is
+cond, which provides pairs of tests along with what to do if that
+test passes</li>
+<li>In many ways, Racket's cond statement works much like switch
+statements in other languages</li>
+<li>Traditionally, #t is the last case in a cond, similar to the
+"default" branch of switch statements</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="racket" >(define (flat-sum xs)
+  (cond [(null? xs) 0]
+        [(number? (car xs)) (+ (car xs) (flat-sum (cdr xs)))]
+        [#t (+ (flat-sum (car xs)) (flat-sum (cdr xs)))]))
+</code></pre>
+</div>
+</section>
+<section id="slide-orga26227c">
+<h3 id="orga26227c">Local bindings</h3>
+<aside class="notes">
+<ul>
+<li>Like in ML, we can create local bindings that are only available
+inside the current scope</li>
+<li>Unlike ML's `let`, Racket's `let` statement evaluates all
+statements in the environment in which the let is defined, so
+they cannot reference one another</li>
+<li>However, Racket gives us several ways of using local bindings,
+like `let*` and `letrec`, which let us refer to other local
+bindings, as well as local define statements.</li>
+<li>We'll see letrec shortly but its use is similar to the other let operations</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="racket" >(define (flat-sum xs)
+  (cond [(null? xs) 0]
+        [(number? (car xs))
+            (let ([head     (car xs)]
+                  [tail-sum (flat-sum (cdr xs))]
+                  (+ head tail-sum))]
+        [#t (let ([recur-sum (flat-sum (car xs))]
+                  [tail-sum  (flat-sum (cdr xs))])
+                  (+ recur-sum tail-sum))]))
+
+(define (add-five-then-double x)
+   (let* ([added (+ x 5)]
+          [doubled (* added 2)]
+     doubled)))
+</code></pre>
+</div>
+</section>
+<section id="slide-org18636b8">
+<h3 id="org18636b8">Delayed execution with thunks</h3>
+<aside class="notes">
+<ul>
+<li>"Thunks" are a concept used for lazy evaluation in functional
+programming</li>
+<li>Thunks are in essence 0-arity lambda expressions used to delay
+evaluation</li>
+<li>This concept enables "lazy" and potentially infinite continuation
+of calculations to be delayed on an as-needed basis</li>
+<li>Here, `b` is defined in terms of a thunk which just returns the
+a constant integer, but must be called as a function to retrieve
+its value, and is re-evaluated at each call.</li>
+<li>The term "thunk" is allegedly a colloquialism for the past tense
+of "think", according to Eric Raymond, and references a
+compiler's ability to infer the return type of the function</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="racket" > ﻿(define a 5)
+ (define b (lambda () 6))
+
+ a ; 5
+ ﻿b ; #<procedure:b>
+
+ ﻿(+ a b)
+ ; +: contract violation
+ ;   expected: number?
+ ;   given: #<procedure:b>
+
+ ﻿(+ a (b)) ; 11
+</code></pre>
+</div>
+</section>
+<section id="slide-org014a0ba">
+<h3 id="org014a0ba">Streaming with thunks</h3>
+<aside class="notes">
+<ul>
+<li>A stream is a function which by convention returns a pair of a
+result cons'd onto a thunk which will make successive calls to
+the stream</li>
+<li>By successively evaluating the `cdr` of the results of a call to
+a stream, we can get the following result</li>
+<li>We could have implemented these in ML as well, but creating the
+necessary types would have been cumbersome.</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="racket" >(define forever-zeros (lambda () (cons 0 forever-zeros)))
+
+(car (forever-zeros)) ; 0
+(cdr (forever-zeros)) ; #<procedure:forever-zeros>
+
+((cdr (forever-zeros))) ; '(0 . #<procedure:forever-zeros>)
+((cdr ((cdr ((cdr ((cdr (forever-zeros))))))))) ; '(0 . #<procedure:forever-zeros>)
+</code></pre>
+</div>
+</section>
+<section id="slide-orgf64ebb0">
+<h3 id="orgf64ebb0">Streaming with thunks</h3>
+<aside class="notes">
+<ul>
+<li>Here we can define the stream of natural numbers from one to infinity</li>
+<li>We'll use the `letrec` form of let, which allows the lambda
+produced by `next` to reference itself</li>
+<li>Calling the `cdr` of natural numbers successively will then
+generate infinite results of adding one to the previous result</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="racket" >(define natural-numbers
+  (letrec ([next (lambda (x) (cons x (lambda () (next (+ x 1)))))])
+    (lambda () (next 1))))
+
+(car (natrual-numbers))                 ; 1
+(car ((cdr (natrual-numbers))))         ; 2
+(car ((cdr ((cdr (natural-numbers)))))) ; 3
+
+(define fibonacci
+  (letrec ([fibs (lambda (a b) (cons a (lambda () (fibs b (+ a b)))))])
+     (lambda () (fibs 1 1))))
+
+(car ((cdr ((cdr ((cdr ((cdr ((cdr (fibonacci))))))))))) ; 8
+</code></pre>
+</div>
+</section>
+<section id="slide-orgbfd2289">
+<h3 id="orgbfd2289">Macros</h3>
+<aside class="notes">
+<ul>
+<li>Macros are an extremely powerful tool which let us treat the
+structures of Racket itself as data structures</li>
+<li>By letting us alter the syntax of the language itself and
+treating expressions as data rather than executing them directly,
+we can change the semantics of how we use Racket</li>
+<li>If we got tired of having to wrap our thunks in lambdas to
+prevent their execution, we could create a macro "thunk" that
+does it for us</li>
+<li>It's important to note that because we're dealing with macro
+expansion as opposed to actually calling code, we can pass around
+forms like (fibs 1 1) without them being evaluated, or even
+if they haven't been defined at all</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="racket" >(define-syntax thunk
+  (syntax-rules ()
+    [(thunk e) (lambda () e)]))
+
+(define fibonacci
+  (letrec ([fibs (lambda (a b) (cons a (thunk (fibs b (+ a b)))))])
+    (thunk (fibs 1 1))))
+
+(car (fibonacci)) ; 1
+(car ((cdr ((cdr ((cdr ((cdr (fibonacci)))))))))) ; 5
+</code></pre>
+</div>
+</section>
+<section id="slide-org7c9aaa7">
+<h3 id="org7c9aaa7">Macros</h3>
+<aside class="notes">
+<ul>
+<li>We can even use macros to abstract out all of the effort and
+generalize building streams in this way, exploiting the fact that
+macros won't actually evaluate their terms until called as code.</li>
+
+</ul>
+
+</aside>
+<div class="org-src-container">
+
+<pre><code class="racket" >    ﻿(define-syntax thunk-iter-2
+      (syntax-rules ()
+        [(thunk-iter-2 f operation start-exp)
+         (letrec ([f (lambda (a b) (cons a (thunk (f b (operation a b)))))])
+           (thunk start-exp))]))
+
+ ﻿   (define fibonacci2 (thunk-iter-2 fibs + (fibs 1 1)))
+
+    (car ((cdr ((cdr ((cdr ((cdr (fibonacci2)))))))))) ; 5
+
+    (define pows (thunk-iter-2 f * (f 1 2)))
+    (car ((cdr ((cdr ((cdr ((cdr (pows)))))))))) ; 8
+    (car ((cdr ((cdr ((cdr ((cdr ((cdr (pows)))))))))))) ; 32
+</code></pre>
+</div>
+</section>
+</section>
+<section>
+<section id="slide-org4cdda47">
+<h2 id="org4cdda47">Let's compare</h2>
+<aside class="notes">
+<ul>
+<li>ML and Racket are alike in many ways</li>
+<li>They're functional: higher-order functions, discourage mutation,
+lexically scoped for encapsulating data</li>
+<li>Type systems are very different</li>
+<li>ML's type system is defensive at compile time, forces programmer
+to tell ML what kind of data are allowed up front, rejects many
+programs at compile time</li>
+<li>Racket's type system is extremely flexible, allowing the
+programmer to decide how to handle code or data as they see fit</li>
+
+</ul>
+
+</aside>
+<ul>
+<li>Both functional-first languages</li>
+<li>Very different type systems</li>
+
+</ul>
+</section>
+<section id="slide-orgf59b9d3">
+<h3 id="orgf59b9d3">Static Checking</h3>
+<aside class="notes">
+<ul>
+<li>ML's type system can help us by catching if we try and pass a list
+to a function that takes an integer</li>
+<li>Static type checking also helps us from having to do type checking
+in our program, and prevents us from accessing undefined data</li>
+<li>ML's type checking prevents us from using operations on the
+wrong types: if we didn't define it, it won't compile</li>
+<li>ML's typing also prevents us from redundantly checking types,
+something a language like javascript might do at the beginning of
+every function call</li>
+<li>As safe as ML is, we can still make mistakes like taking the head
+of the empty list, or flipping the branches of a conditional</li>
+<li>With ML's safety comes complexity. We might get bizarre error
+messages and be forced to handle a condition even though we know
+based on our code that the error ML is helping us to prevent can
+never actually occur.</li>
+
+</ul>
+
+</aside>
+</section>
+<section id="slide-org0d46e37">
+<h3 id="org0d46e37">Dynamic Typing</h3>
+<aside class="notes">
+<ul>
+<li>Racket's type system lets us write functions that might take an
+integer or a list and return either an integer or a list: to
+Racket it's just un-typed data.</li>
+<li>Additionally, we've seen that we can actually change Racket's type
+system dynamically as we write our program using macros, which
+would break all of the safety provided in ML</li>
+
+</ul>
+
+</aside>
+</section>
+</section>
+<section>
+<section id="slide-org34516bc">
+<h2 id="org34516bc">BREAK</h2>
+<aside class="notes">
+nil
+</aside>
+<div class="org-src-container">
+
+<pre><code class="racket" ></code></pre>
+</div>
+</section>
+</section>
+</div>
+</div>
+<script src="file:///Users/sleepynate/Dropbox%20(Personal)/org-mode/reveal.js-3.3.0/lib/js/head.min.js"></script>
+<script src="file:///Users/sleepynate/Dropbox%20(Personal)/org-mode/reveal.js-3.3.0/js/reveal.js"></script>
+
+<script>
+// Full list of configuration options available here:
+// https://github.com/hakimel/reveal.js#configuration
+Reveal.initialize({
+
+controls: true,
+progress: true,
+history: false,
+center: true,
+slideNumber: 'c',
+rollingLinks: false,
+keyboard: true,
+overview: true,
+
+theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+transitionSpeed: 'default',
+multiplex: {
+    secret: '', // null if client
+    id: '', // id, obtained from socket.io server
+    url: '' // Location of socket.io server
+},
+
+// Optional libraries used to extend on reveal.js
+dependencies: [
+ { src: 'file:///Users/sleepynate/Dropbox%20(Personal)/org-mode/reveal.js-3.3.0/plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+ { src: 'file:///Users/sleepynate/Dropbox%20(Personal)/org-mode/reveal.js-3.3.0/plugin/notes/notes.js', async: true, condition: function() { return !!document.body.classList; } }]
+});
+</script>
+</body>
+</html>
