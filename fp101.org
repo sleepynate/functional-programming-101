@@ -1,7 +1,7 @@
 #+TITLE:     Functional Programming 101
 #+AUTHOR:    Nathan Dotz
-#+EMAIL:     nathan.dotz@gmail.com
 #+DATE:      Codemash 2017
+#+EMAIL:     nathan.dotz@gmail.com
 #+LANGUAGE:  en
 #+OPTIONS:   H:3 num:nil toc:nil \n:nil @:t ::t |:t ^:t -:t f:t *:t <:t
 #+OPTIONS:   skip:nil d:nil todo:t pri:nil tags:not-in-toc timestamp:nil
@@ -9,7 +9,7 @@
 #+EXPORT_SELECT_TAGS: export
 #+EXPORT_EXCLUDE_TAGS: noexport
 #+LINK_UP:
-#+LINK_HOME:
+#+LINK_HOME: https://git.io/vMRB1
 #+REVEAL_ROOT: file:///Users/sleepynate/Dropbox%20(Personal)/org-mode/reveal.js-3.3.0
 #+REVEAL_PLUGINS: (highlight notes)
 # #+REVEAL_THEME: simple
@@ -838,11 +838,11 @@ whatever it may be.
    - Like ML, they are formed by "cons"ing values onto the front of
      existing lists
    - A list is composed of one element cons'd onto another list
-   - In Racket, the empty list is represented by the `null` symbol, as
+   - In Racket, the empty list is represented by the null symbol, as
      opposed to ML's empty list brackets
-   - For convenience, there is a `list` form which accepts an variable
+   - For convenience, there is a list form which accepts an variable
      number of arguments to perform this successive "cons"ing for you
-   - `null?` is the function which checks to see if a list is empty
+   - null? is the function which checks to see if a list is empty
    #+END_NOTES
    #+BEGIN_SRC racket
    (cons 1 (cons 2 (cons 3 (cons 4 null))))
@@ -856,7 +856,7 @@ whatever it may be.
      (if (null? xs)
          0
          (+ (car xs) (sum (cdr xs)))))
-   #+END_SRC racket
+   #+END_SRC
 ** Scheme Exercise 1
    #+BEGIN_NOTES
    (define (concat xs ys)
@@ -1043,7 +1043,7 @@ whatever it may be.
        (f xs 0)))
    #+END_SRC
 ** Scheme Exercise 4
-   #+BEGIN_NOTES
+   #+BEGIN_NOTES racket
    (define (concat xs ys)
      (letrec ([f (lambda (as bs)
                  (cond [(null? as) bs]
@@ -1053,7 +1053,7 @@ whatever it may be.
    Write a function that concatenates two lists. It should be
    tail-call recursive and use cond
 ** Scheme Exercise 5
-   #+BEGIN_NOTES
+   #+BEGIN_NOTES racket
    (define (my-map f lst)
     (cond
         [(null? lst) null]
@@ -1074,7 +1074,7 @@ whatever it may be.
    (equal? (filter even? (list 1 2 3 4 5)) '(2 4))
    #+END_SRC
 ** Scheme exercise 6
-   #+BEGIN_NOTES
+   #+BEGIN_NOTES racket
     (define (foldLeft f acc xs)
       (cond
         [(null? xs) acc]
@@ -1157,13 +1157,13 @@ whatever it may be.
 
    (define (take n s)
      (if (eq? n 0)
-         (car s)
-         (take (- n 1) ((cdr s)))))
+         (cons (car s) null)
+         (cons (car s) (take (- n 1) ((cdr s))))))
 
-   (take 11 (fibonacci)) ; 144
+   (take 11 (fibonacci)) ; '(1 1 2 3 5 8 13 21 34 55 89 144)
    #+END_SRC
 ** Scheme Exercise 7
-   #+BEGIN_NOTES
+   #+BEGIN_NOTES racket
    (define (smap f s)
        (cons (f (car s))
              (lambda () (smap f ((cdr s))))))
@@ -1268,7 +1268,6 @@ whatever it may be.
   #+END_NOTES
   #+BEGIN_SRC racket
   #+END_SRC
-*
 * Practice Time
   #+BEGIN_NOTES
   - Now we will have the rest of the period to work on exercises
@@ -1388,4 +1387,48 @@ whatever it may be.
    function which returns a copy of itself, with the new elements in
    the appropriate part of the tree.
 ** Practice Problem 7
+   #+BEGIN_NOTES js
+   function bmap(f, tree) {
+     if (!tree)
+       return undefined;
+     else
+       return new Node(f(tree.value), bmap(f, tree.left), bmap(f, tree.right));
+   }
+   #+END_NOTES
    Implement the higher-order function map to work on your binary tree structure.
+** Practice Problem 8
+   #+BEGIN_NOTES js
+   function zeros() {
+     return () => cons(0, zeros());
+   }
+
+   function take(n, s) {
+     if (n === 0) {
+       return [];
+     } else {
+       let x = s();
+       return cons(head(x), take(n - 1, head(tail(x))));
+     }
+   }
+   #+END_NOTES
+   Implement an infinite stream of the number 0. Implement a take
+   function to take n elements from the stream and put them in a list.
+** Practice Problem 9
+   #+BEGIN_NOTES js
+   function fibonacci() {
+     function f(a, b) {
+       return cons(a, () => f(b, a + b));
+     }
+     return () => f(1, 1);
+   }
+   #+END_NOTES
+   Implement an infinite stream of the fibonacci sequence.
+** Practice Problem 10
+   #+BEGIN_NOTES js
+   #+END_NOTES
+   Implement a function to filter an infinite stream of values.
+* Final Q/A
+  Thank you to everyone for participating, and special thanks to my
+  employer, Detroit Labs for putting up with my love of archaic and
+  esoteric programming languages. Come see our booth right next to
+  registration!
